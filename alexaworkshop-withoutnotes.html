@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+# Voice Recognition - Breif Theory
+
+Turning speech into text using *Automatic Speech Recognition* (**ASR**)
+
+- Uses machine learning to turn voice input into textual output
+
+- Machine learning models based on voice input and textual meaning
+
+---
+
+# Voice Recognition - Breif Theory
+
+Turn text into something actionable using *Natural Language Processing* (**NLP**) specifically *Natural Language Understanding* (**NLU**)
+
+- Syntactic and semantic processing
+
+- Text converted to intents and entities (synonyms)
+
+**Example**: "I would like to fly from DCA to Chicago"
+
+**Intent**: FindFlightIntent
+
+**Entities**: DCA, Chicago
+
+---
+
+# Voice Recognition - Breif Theory
+
+Natural Language Understanding is more than just parsing. One example is the application of synonyms.
+
+**Example**: "I would like to fly from DCA to MDW"
+
+  - MDW is the same as Chicago
+
+**Example**: "I would like to fly from Washington, DC to MDW"
+
+  - Washington, DC is the same as DCA
+
+**Example**: "I would like to fly from Reagan to Chicago"
+
+  - DCA is the same as Reagan International and even just Reagan
+
+Disambiguation can be difficult
+
+  - Washington, DC could be DCA or IAD
+
+  - Chicago could be Midway, MDW, O'Hare or ORD
+
+---
+
+# Voice Recognition - Breif Theory
+
+Responses can also benifit from NLP with using *Natural Language Generation* (**NLG**)
+
+  - Pull in context around a given response instead of simplely generating a response based off a state machine
+
+  - If you are interested in learning more check out Automated Insights' [Wordsmith](https://automatedinsights.com/wordsmith)
+
+---
+
+# Voice Recognition - Landscape
+
+**Main Players**: Siri, Google, Cortana, Alexa
+
+  - Each has a slightly different integration
+
+  - Some are fenced like Siri with a limited set of interactions allowed
+
+  - Alexa and Google are leaders
+
+---
+
+# Voice Recognition - Landscape
+
+Evolution of Alexa from Echo to Echo Dot to Echo Show and more
+
+![Amazon devices](./amazon-devices.png)
+
+
+---
+
+# Voice Recognition - Landscape
+
+Amazon has also created the ability for hardware manufacturers to create their own device so Alexa can be integrated into non-Amazon devices
+
+![Amazon devices](./avs-devices.png)
+
+---
+
+# Voice Recognition - Landscape
+
+There are two acronyms you will see when looking at the Alexa developer documentation. 
+
+*Alexa Voice Service* (**AVS**) 
+
+   - This service enables the hardware integrations
+
+   - The documentation for [Alexa Voice Service](https://developer.amazon.com/docs/alexa-voice-service/)
+
+*Alexa Skills Kit* (**ASK**) 
+
+  - This service enables the development of skills for Alexa
+
+  - The documentation for [Alexa Skills Kit](https://developer.amazon.com/docs/ask-overviews/build-skills-with-the-alexa-skills-kit.html)
+
+
+---
+
+# Voice Recognition - Landscape
+
+Amazon has also extracted two services that back Alexa that can be used independantly.
+
+*AWS Lex*
+
+  - Exposes the NLU system that backs Alexa
+
+  - Documentation for [AWS Lex](https://aws.amazon.com/lex/)
+
+*AWS Polly*
+
+  - Exposes the speech synthesis that backs Alexa
+
+  - Documentation for [AWS Polly](https://aws.amazon.com/polly/)
+
+---
+
+# Alexa Details - Alexa processing flow
+
+Specifics of how Alexa uses voice recognition to process a request.
+
+![flow](./alex-parse-example.png)
+
+  1. User speaks
+
+  2. Alexa device detects wake word 
+
+  3. Alexa device sends audio stream to the Alexa service
+
+  4. Alexa service applies ASR and NLU
+  
+  5. The invocation word is used to find the correct skill to call
+
+  6. Your skill is invoked with the extracted Intent and Slots with their Entities
+
+  7. A response is returned from the skill back to the Alexa service and streamed as speach back to the Alexa device
+
+---
+
+# Alexa Details - Skill development process
+
+  1. Design a voice UI for the skill
+  
+  2. Gather the intents, utterances and slots needed for the skill
+  
+  3. Implementation
+  
+  4. Deploy and test
+
+---
+
+# Alexa Details - Advanced concepts
+
+  - Contextual understanding - Examples would be using the previous request to understand the next request 
+    or using the user's location to disambiguate a location.
+
+  - Multimodal contextual understanding (video + voice, etc)
+
+  - Alexa knows the difference between multiple speakers, a feature called "Your Voice"
+
+  - "Natural skill interaction" allows dropping of the invocation name if the request
+    context can be determined to match only one skill
+
+---
+
+# Skill Development - Basics
+
+AWS Lambda is the prefered method of skill processing. Most of the examples you will find 
+are written in Javascript but it isn't the only option available.
+
+  - Another option is to use Python and [Flask Ask](https://github.com/johnwheeler/flask-ask)
+
+The Alexa development portal is a seperate area from the AWS Lambda portal. There is a non-trival
+process that is required to let the Alexa system communicate with a Lambda application, more about
+that can be found in the [Custom Skills documentation](https://developer.amazon.com/docs/custom-skills/host-a-custom-skill-as-an-aws-lambda-function.html)
+
+  - Note that we will be using Heroku because it is free and easier to get started with.
+
+---
+
+# Skill Development - Intents
+
+There are both custom and built in intents available to Skills.
+
+  - A custom intent is given a name and that name will later be referenced in the code for the
+    Skill. An example might be:
+
+    ```GetHoroscope```
+
+  - There are a number of built in intents that may be used to reduce the amount of work needed
+    in setting up common requests. A couple examples are:
+
+    - AMAZON.HelpIntent - A request for help
+
+    - AMAZON.StopIntent - A request to stop the skill
+
+    More can be found in the [built in intents document](https://developer.amazon.com/docs/custom-skills/standard-built-in-intents.html)
+
+---
+
+# Skill Development - Slots
+
+There are both custom and built in slots available to Skills.
+
+  - A custom slot will consist of a list of valid slot values. These values will be used to produce a model
+    for the slot. For example you might create a custom slot type named *sign* as follows:
+
+    ```
+    Capricorn
+    Aquarius
+    Pisces
+    Aries
+    Taurus
+    Gemini
+    ```
+
+  - There are a number of built in slot types that will fit a large number of needs. A couple examples are:
+
+    - AMAZON.DATE - A slot that contains a date
+
+    - AMAZON.NUMBER - A slot that contains a number
+
+    More can be found in the [built in slot types document](https://developer.amazon.com/docs/custom-skills/slot-type-reference.html)
+
+---
+
+# Skill Development - Sample Utterances
+
+  - Utterances help form the model for recognizing intents based on your intents
+    and slots
+
+  - The more sample utterances you have the more likely the model will be able to
+    match a phrase that isn't exactly what is in one of the utterances
+
+  - An example of a set of utterances:
+
+  ```
+  GetHoroscope the horoscope for {Sign} 
+  GetHoroscope {Sign}
+  GetHoroscope what's the horoscope for {Sign}
+  GetHoroscope what is the horoscope for {Sign}
+  GetHoroscope give me the horoscope for {Sign}
+  GetHoroscope tell me the horoscope for {Sign}
+  ```
+
+---
+
+# Skill Development - Responses
+
+The response text that you give back to the Alexa skills service as a response to 
+a request can generally be translated into speech well. In some cases you may want
+to enhance it with one of the following options.
+
+- SSML - Speech Synthesis Markup Language allows you to provide extra information 
+  to the text to speech system such as reading a list of numbers as a single number
+  or slowing down a set of words. An example would be:
+
+```
+  <speak>
+    <say-as interpret-as="cardinal">12345</say-as>
+  </speak>
+```
+
+- SSML also lets you send back pre-recorded audio. An example would be:
+
+```
+  <speak>
+    <audio src="https://something.com/audio/welcome.mp3" /> 
+  </speak>
+```
+
+---
+class: middle, center
+
+# Questions?
+
+---
+
+# Voice UX/UI - General 
+
+There are a number of places to apply UX/UI processes in designing an Alexa Skill.
+The first two to know about are:
+
+  - Voice-Only Interaction - Normal mode of operation
+
+  - Voice with visual display - Alexa has cards that show up in the app
+
+What follows is a very abrivated version of what can be found in the [Alexa designing
+for voice](https://developer.amazon.com/designing-for-voice/) documentation.
+
+---
+
+# Voice UX/UI - Design Process 
+
+Establish the purpose and user stories. The following are a couple parts of this process.
+
+- What is the purpose of the skill? Why will people want to use it?
+
+  - Example: *To provide a way to learn a subject through flash cards*
+
+- What can a user do with the skill?
+
+  - Example: *Ask for a random flash card*
+
+---
+
+# Voice UX/UI - Design Process 
+
+Write scripts
+
+- Scripts for voice interfaces are like wireframes for a visual user interface
+
+- Create dialogs between the user and the skill
+
+    ```
+    User: Alexa, open flash card
+    Alexa: Welcome to flash card. Would you like a flash card?
+    User: Yes
+    Alexa: What is the atomic mass of oxygen?
+    User: Give me the answer
+    Alexa: 15.999
+    ...
+    ```
+
+- It can be helpful to record dialogs with another person
+
+---
+
+# Voice UX/UI - Design Process 
+
+Develop the flow
+
+- Outline the happy path flow first, this will be the shortest dialog to
+  get to a completion and then build on that with variations
+
+- Keep in mind that a user may be able to start anywhere in a flow so you
+  will need to be able to fill in the blanks by reordering a dialog. For
+  example:
+
+  ```
+  User: I want to fly to Chicago from DC
+  Alexa: When do you wish to travel?
+  ...
+  ```
+
+  or
+
+  ```
+  User: I want to go to Chicago
+  Alexa: How do you want to get to Chicago?
+  User: I want to fly there from DC
+  Alexa: When do you wish to travel?
+  ...
+  ```
+
+---
+
+# Voice UX/UI - User Requests 
+
+1. Finish designing before you build
+
+2. Identify intents, Use the built-in intents
+
+3. Identify utterances
+
+4. Identify slots
+
+---
+
+# Voice UX/UI - Alexa Responses 
+
+1. Be brief
+
+2. Speak and write naturally
+
+3. Use conversation markers
+
+4. Add variety
+
+5. Provide definitive choices
+
+6. Handle problems
+
+---
+class: middle, center
+
+# Questions?
+
+---
+
+# Example Skill - Basics
+
+- Flash card skill
+
+  - User asks for a new card
+
+  - Skill responds with a random card
+
+  - User asks for the answer
+
+  - Skill responds with the answer to the card
+
+We will need to hold on to some state after the skill responds with the 
+random card so we know what answer to give when asked.
+
+---
+
+# Example Skill - Publish
+
+- Publishing Your Skills
+
+- Skill Certification Process
+
+---
+
+# More resources
+
+- Amazon guide: [Steps to build a custom skill](https://developer.amazon.com/docs/custom-skills/steps-to-build-a-custom-skill.html)
+
+- Amazon guide: [Build skills with the alexa skills kit](https://developer.amazon.com/docs/ask-overviews/build-skills-with-the-alexa-skills-kit.html)
+
+- [Codecademy Alexa Course](https://www.codecademy.com/learn/learn-alexa)
+
+- [Alexa on github](https://github.com/alexa)
+
+- [Alexa skills SDK for Javascript](https://github.com/alexa/alexa-skills-kit-sdk-for-nodejs)
+
+- [Recent roundup of Alexa resources](https://developer.amazon.com/blogs/alexa/post/82578e06-1733-49ee-a801-e5bea45b2686/resource-roundup-top-alexa-tips-and-tutorials-for-new-skill-builders)
+
+- [Recent roundup of Alexa tutorials](https://developer.amazon.com/blogs/alexa/post/762fee8e-9576-4c70-88c5-418ac809413f/resource-roundup-top-alexa-tips-and-tutorials-for-building-skills-with-visual-components)
+
+- [Alexa videos from re:invent](https://developer.amazon.com/alexa-skills-kit/alexa-at-aws-reinvent)
+
+- [Storyline](https://getstoryline.com/) - A newish visual builder for Alexa skills
+
+- [Echosim](https://echosim.io/welcome) - An Echo simulator
+
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
