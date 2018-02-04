@@ -66,6 +66,7 @@ Disambiguation can be difficult
 
   - Chicago could be Midway, MDW, O'Hare or ORD
 
+
 ---
 
 # Voice Recognition - Breif Theory
@@ -431,6 +432,53 @@ class: middle, center
 
 We will need to hold on to some state after the skill responds with the 
 random card so we know what answer to give when asked.
+
+---
+
+# Example Skill - Heroku
+
+We will need to get the sample deployed to Heroku and note the URL it gives
+us for the deployment.
+
+- Get a copy of the workshop repo:
+
+  ```
+  git https://github.com/ornlabs/gwu_alexa_workshop
+  ```
+
+- Get the repo deployed to Heroku (note the URL that is returned by the push command)
+
+  ```
+  npm install
+  heroku create
+  git push heroku master
+  ```
+
+---
+
+# Example Skill - Setup
+
+- Setup a skill in the Amazon Developer Console for Alexa.
+
+- Skill Information
+
+- Interaction builder - Intents
+
+  - **NextCardIntent**
+
+  - **AnswerCardIntent**
+
+- Configuration
+
+  - Service endpoint selection should be HTTPS
+
+  - Set the "Default" field with your Heroku URL
+
+- SSL Certificate 
+
+  - Set "Certificate for DEFAULT Endpoint:" to the second option
+
+- Test
 
 ---
 
